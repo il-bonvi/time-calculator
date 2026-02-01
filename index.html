@@ -330,7 +330,7 @@
         input[type="time"] {
             width: 100%;
             padding: 18px 24px;
-            background: var(--bg-primary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
             border: 2px solid var(--border);
             border-radius: 12px;
             color: var(--text-primary);
@@ -338,17 +338,24 @@
             font-family: var(--font-body);
             transition: all 0.3s ease;
             outline: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         input[type="date"]:hover,
         input[type="time"]:hover {
             border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.1),
+                0 0 10px var(--glow);
         }
 
         input[type="date"]:focus,
         input[type="time"]:focus {
             border-color: var(--accent-gold);
-            box-shadow: 0 0 20px var(--glow);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.1),
+                0 0 20px var(--glow);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
         }
 
         .date-row {
@@ -419,6 +426,7 @@
             opacity: 0;
             transform: scale(0.95);
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
         }
 
         .result.show {
@@ -434,6 +442,9 @@
             text-align: center;
             line-height: 1.3;
             margin-bottom: 15px;
+            user-select: none;
+            cursor: default;
+            pointer-events: none;
         }
 
         .result-detail {
@@ -442,6 +453,9 @@
             text-align: center;
             line-height: 1.6;
             font-weight: 600;
+            user-select: none;
+            cursor: default;
+            pointer-events: none;
         }
 
         .decorative-line {
@@ -482,6 +496,13 @@
         input[type="time"]::-webkit-calendar-picker-indicator {
             filter: invert(1) brightness(0.8) sepia(1) saturate(5) hue-rotate(15deg);
             cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        input[type="date"]:hover::-webkit-calendar-picker-indicator,
+        input[type="time"]:hover::-webkit-calendar-picker-indicator {
+            opacity: 1;
         }
     </style>
 </head>
@@ -537,15 +558,19 @@
         // Imposta date di default
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
+            const futureDate = new Date(today);
+            futureDate.setDate(futureDate.getDate() + 104);
             
             document.getElementById('date1').valueAsDate = today;
-            document.getElementById('date2').valueAsDate = tomorrow;
-            document.getElementById('countdownDate').valueAsDate = today;
+            document.getElementById('date2').valueAsDate = futureDate;
             
             const now = new Date();
-            document.getElementById('targetTime').value = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            const targetTime = new Date(now.getTime() + 69 * 60 * 1000);
+            document.getElementById('targetTime').value = String(targetTime.getHours()).padStart(2, '0') + ':' + String(targetTime.getMinutes()).padStart(2, '0');
+            
+            // Se l'ora target è il giorno successivo, imposta la data a domani
+            const countdownDate = targetTime.getDate() !== now.getDate() ? new Date(now.getTime() + 24 * 60 * 60 * 1000) : now;
+            document.getElementById('countdownDate').valueAsDate = countdownDate;
         });
 
         // Gestione temi
